@@ -23,7 +23,7 @@ jobs:
       uses: Azure/get-keyvault-secrets@v1
       with:
         keyvault: 'rw-vault'
-        secrets: 'containerRegistryPassword, containerRegistryUsername, containerRegistryLoginServer'
+        secrets: 'containerRegistryPassword,containerRegistryUsername, containerRegistryLoginServer'
       id: getVaultSecrets
 
     - name: Login to Registry
@@ -32,8 +32,6 @@ jobs:
         login-server: ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}
         username: ${{steps.getVaultSecrets.outputs.containerRegistryPassword}}
         password: ${{steps.getVaultSecrets.outputs.containerRegistryUsername}}
-
-    - name: Build and Push the image
       run: |
         docker build . -t ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ github.sha }}
         docker push ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ github.sha }}   
