@@ -1,0 +1,45 @@
+name: Build and Publish to ACR
+
+on:
+  push:
+    branches:
+      - master
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Login to Azure
+      uses: Azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Get key vault secrets
+      uses: Azure/get-keyvault-secrets@v1
+      with:
+        keyvault: 'rw-vault'
+        secrets: 'containerRegistryPassword, containerRegistryUsername, containerRegistryLoginServer'
+      id: getVaultSecrets
+
+    - name: Login to Registry
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}
+        username: ${{steps.getVaultSecrets.outputs.containerRegistryPassword}}
+        password: ${{steps.getVaultSecrets.outputs.containerRegistryUsername}}
+
+    - name: Build and Push the image
+      run: |
+        docker build . -t ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ github.sha }}
+        docker push ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ github.sha }}   
+
+
+
+
+    
+
