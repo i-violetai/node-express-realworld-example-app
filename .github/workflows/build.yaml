@@ -32,9 +32,7 @@ jobs:
         login-server: ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}
         username: ${{steps.getVaultSecrets.outputs.containerRegistryPassword}}
         password: ${{steps.getVaultSecrets.outputs.containerRegistryUsername}}
-
-    - name: Build and Push image
-      run: |
+    - run: |
         docker build . -t ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ github.sha }}
         docker push ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ github.sha }}   
 
