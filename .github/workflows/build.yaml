@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+    tags: v1.*
 
 
 jobs:
@@ -33,9 +34,9 @@ jobs:
         username: ${{ steps.getVaultSecrets.outputs.containerRegistryUsername }}
         password: ${{ steps.getVaultSecrets.outputs.containerRegistryPassword }}
     - run: |
-        docker build . -t ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ github.sha }}
-        docker push ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ github.sha }}   
-
+        docker build . -t ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ github.tag }}
+        docker push ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ github.tag }}   
+  
 
 
 
