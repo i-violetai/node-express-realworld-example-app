@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - master
-    tags: v1.*
+    tags: 
+      - "v*.*.*"
 
 
 jobs:
@@ -20,6 +21,13 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+    - name: Set env variable for the version
+      run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+    - name: Test
+      run: |
+        echo $RELEASE_VERSION
+        echo ${{ env.RELEASE_VERSION }}
+
     - name: Get key vault secrets
       uses: Azure/get-keyvault-secrets@v1
       with:
@@ -34,8 +42,8 @@ jobs:
         username: ${{ steps.getVaultSecrets.outputs.containerRegistryUsername }}
         password: ${{ steps.getVaultSecrets.outputs.containerRegistryPassword }}
     - run: |
-        docker build . -t ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ github.tag }}
-        docker push ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ github.tag }}   
+        docker build . -t ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ env.RELEASE_VERSION }}
+        docker push ${{steps.getVaultSecrets.outputs.containerRegistryLoginServer}}/rw-nodejs:${{ env.RELEASE_VERSION }}   
   
 
 
