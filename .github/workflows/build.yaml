@@ -26,7 +26,7 @@ jobs:
         secrets: 'containerRegistryPassword,containerRegistryUsername, containerRegistryLoginServer'
       id: getVaultSecrets
 
-    - name: Login to Registry
+    - name: Login to Registry and Publish iIage
       uses: azure/docker-login@v1
       with:
         login-server: ${{ steps.getVaultSecrets.outputs.containerRegistryLoginServer }}
